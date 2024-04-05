@@ -1,0 +1,79 @@
+@startuml sequences
+
+package database {
+    entity inters {
+        inter_id int
+        id_in_messenger bigint
+        full_name varchar127
+        messenger_type varchar127
+    }
+
+    entity messages {
+        mes_id int
+        mes_text text
+        mes_time varchar5
+        is_inter boolean
+        inter_id int
+    }
+}
+
+package backend {
+    package forRequestsAndResponsesDbLayer {
+        class Dialog {
+            interId int
+            idInMessenger long
+            fullName String
+            messengerType String
+        }
+
+        class Message {
+            mesId int
+            mesText String
+            mesTime String
+            isInter boolean
+            interId int
+        }
+    }
+
+    package forRequestsAndResponsesFrontendLayer {
+        package getAllDialogs {
+            class request {
+
+            }
+
+            class response {
+                dialogId int
+                fullName String
+                messengerType String
+            }
+        }
+
+        package getAllMessagesByDialogId {
+            class request {
+                id dialogId
+            }
+
+            class response {
+                text String
+                time String
+                isInter boolean
+            }
+        }
+    }
+}
+
+package frontend {
+    class Dialog {
+        dialogId int
+        fullName String
+        messengerType String
+    }
+
+    class Message {
+        text String
+        time String
+        isInter boolean
+    }
+}
+
+@enduml
