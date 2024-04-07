@@ -1,18 +1,6 @@
-@startuml sequences
+@startuml classes
 
-/'
-когда кто-то пишет на бота, проверяем есть ли в базе данных диалог с таким же айди из мессенджера
-- если есть, то просто добавляем сообщение в бд
-- иначе сначала добавляем диалог в бд
-- - потом добавляем сообщение в бд
-
-у фронтенда два состояния:
-- когда чат не выбран
-- - опрашиваем только диалоги
-- когда чат выбран
-- - опрашиваем диалоги
-- - и опрашиваем сообщения по айди диалогу
-'/
+scale 1920*1080
 
 package database {
     entity inters {
@@ -62,6 +50,13 @@ package backend {
             }
         }
 
+        package sendMessage {
+            class request {
+                text String
+                dialogId int
+            }
+        }
+
         package getAllMessagesByDialogId {
             class request {
                 id dialogId
@@ -74,6 +69,7 @@ package backend {
             }
         }
     }
+
 }
 
 package frontend {
@@ -89,5 +85,43 @@ package frontend {
         isInter boolean
     }
 }
+
+frame notes {
+    note as N1
+    у фронтенда два состояния:
+    - когда чат не выбран
+    - - опрашиваем только диалоги
+    - когда чат выбран
+    - - опрашиваем диалоги
+    - - и опрашиваем сообщения по айди диалогу
+    end note
+
+    note as N2
+    **transformation sendMessage.request**
+    **to Message for db**
+    mesId = -1
+    mesText = text
+    mesTime - Date.now()
+    isInter = false
+    interId = dialogId
+    end note
+
+    note as N3
+    когда кто-то пишет на бота,
+    проверяем есть ли в базе данных
+    диалог с таким же айди из мессенджера
+    - если есть, то просто добавляем сообщение в бд
+    - иначе сначала добавляем диалог в бд
+    - - потом добавляем сообщение в бд
+    end note
+}
+
+frontend ---> backend
+backend ---> database
+
+database --> backend
+backend --> frontend
+
+forRequestsAndResponsesFrontendLayer ---> forRequestsAndResponsesDbLayer
 
 @enduml
